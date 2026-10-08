@@ -1,0 +1,14 @@
+{
+  "name": "hyperframes-claude",
+  "owner": { "name": "compteclaudebot-stack" },
+  "description": "Lightweight mirror of the HyperFrames plugin by HeyGen (skills only), synced daily from heygen-com/hyperframes.",
+  "plugins": [
+    {
+      "name": "hyperframes",
+      "source": "./",
+      "description": "HyperFrames by HeyGen: write HTML, render video. All published HyperFrames skills.",
+      "homepage": "https://hyperframes.heygen.com",
+      "license": "Apache-2.0"
+    }
+  ]
+}
