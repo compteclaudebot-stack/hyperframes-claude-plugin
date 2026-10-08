@@ -1,0 +1,34 @@
+name: Sync from heygen-com/hyperframes
+on:
+  push:
+    branches: [main]
+    paths: [".github/workflows/sync.yml", "scripts/**"]
+  schedule:
+    - cron: "17 4 * * *"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch upstream
+        run: git clone --depth 1 https://github.com/heygen-com/hyperframes.git /tmp/upstream
+      - name: Copy plugin files
+        run: |
+          rm -rf skills .claude-plugin/plugin.json
+          cp /tmp/upstream/.claude-plugin/plugin.json .claude-plugin/plugin.json
+          cp -r /tmp/upstream/skills ./skills
+          find skills -maxdepth 1 -type f -delete
+          cp /tmp/upstream/LICENSE ./LICENSE
+          python3 scripts/sanitize.py
+          git -C /tmp/upstream rev-parse HEAD > UPSTREAM_COMMIT
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Sync from heygen-com/hyperframes@$(cut -c1-7 UPSTREAM_COMMIT)"
+          git push
